@@ -89,7 +89,7 @@ export const changePassword = async (req, res) => {
 export const followJournalist = async (req, res) => {
   try {
       const userId = req.user.id;
-      const journalistId = req.params.journalistId;
+      const journalistId = req.params.journalistId; /////////////
 
       // Ajouter le journaliste suivi à la liste des journalistes suivis par l'utilisateur
       await User.findByIdAndUpdate(userId, { $addToSet: { followedJournalists: journalistId } });
