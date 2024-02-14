@@ -1,5 +1,5 @@
 import JournalistVerification from "../models/journalistVerification.js";
-
+//Create a new journalist verification
 export async function createJournalistVerification(req, res) {
   const { userId, documents, status, adminId } = req.body;
 
@@ -10,7 +10,7 @@ export async function createJournalistVerification(req, res) {
     res.status(500).json({ error: error.message });
   }
 }
-
+//Update journalist verification
 export async function updateJournalistVerification(req, res) {
   const { id } = req.params;
   const { userId, documents, status, adminId } = req.body;
@@ -26,7 +26,7 @@ export async function updateJournalistVerification(req, res) {
     res.status(500).json({ error: error.message });
   }
 }
-
+//Delete journalist verification
 export async function getAllJournalistVerifications(req, res) {
   try {
     const verifications = await JournalistVerification.find({});
@@ -35,7 +35,7 @@ export async function getAllJournalistVerifications(req, res) {
     res.status(500).json({ error: error.message });
   }
 }
-
+//Get journalist verification by id
 export async function getJournalistVerificationById(req, res) {
   const { id } = req.params;
 

@@ -27,7 +27,7 @@ export const editProfile = async (req, res) => {
       res.status(500).json({ error: error.message });
   }
 };
-
+// Get all users
 export async function getAllUsers(req, res) {
   try {
     const users = await User.find({});

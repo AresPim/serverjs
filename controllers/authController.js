@@ -1,7 +1,7 @@
 import User from '../models/user.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-
+//Create a new user
 export async function signin(req, res) {
     const { email, password } = req.body;
   
@@ -16,7 +16,7 @@ export async function signin(req, res) {
       res.status(500).json({ error: error.message });
     }
   }
-
+// Hash Password
 export const hashPassword = async (password) => {
     try {
         // Générer un sel pour le hachage
@@ -30,7 +30,7 @@ export const hashPassword = async (password) => {
         throw new Error("Erreur lors du hachage du mot de passe");
     }
 };
-
+// Sign Up
 export const signUp = async (req, res) => {
   try {
       const { username, password, email, phoneNumber, role, profileImage, reputation } = req.body;
@@ -46,7 +46,7 @@ export const signUp = async (req, res) => {
       res.status(500).json({ error: error.message });
   }
 };
-
+// Forgot Password
 export const forgotPassword = async (req, res) => {
       try {
           const { emailOrPhone } = req.body;

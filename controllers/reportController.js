@@ -1,5 +1,5 @@
 import Report from "../models/report.js";
-
+//Create a new report
 export async function createReport(req, res) {
   const { userId, postId, reason, status } = req.body;
 
@@ -10,7 +10,7 @@ export async function createReport(req, res) {
     res.status(500).json({ error: error.message });
   }
 }
-
+//Update report
 export async function updateReport(req, res) {
   const { id } = req.params;
   const { userId, postId, reason, status } = req.body;
@@ -26,7 +26,7 @@ export async function updateReport(req, res) {
     res.status(500).json({ error: error.message });
   }
 }
-
+//Get all reports
 export async function getAllReports(req, res) {
   try {
     const reports = await Report.find({});
@@ -35,7 +35,7 @@ export async function getAllReports(req, res) {
     res.status(500).json({ error: error.message });
   }
 }
-
+//Get report by id
 export async function getReportById(req, res) {
   const { id } = req.params;
 

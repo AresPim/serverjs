@@ -1,5 +1,5 @@
 import Post from "../models/post.js";
-
+//Create a new post
 export async function createPost(req, res) {
   const { title, content, category, userId } = req.body;
 
@@ -10,7 +10,7 @@ export async function createPost(req, res) {
     res.status(500).json({ error: error.message });
   }
 }
-
+//Update post
 export async function updatePost(req, res) {
   const { id } = req.params;
   const { title, content, category, verified, credibilityScore, userId } = req.body;
@@ -26,7 +26,7 @@ export async function updatePost(req, res) {
     res.status(500).json({ error: error.message });
   }
 }
-
+//Get all posts
 export async function getAllPosts(req, res) {
   try {
     const posts = await Post.find({});
@@ -35,7 +35,7 @@ export async function getAllPosts(req, res) {
     res.status(500).json({ error: error.message });
   }
 }
-
+//Get post by id
 export async function getPostById(req, res) {
   const { id } = req.params;
 
