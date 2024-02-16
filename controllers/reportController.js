@@ -13,10 +13,10 @@ export async function createReport(req, res) {
 //Update report
 export async function updateReport(req, res) {
   const { id } = req.params;
-  const { userId, postId, reason, status } = req.body;
+  const { status } = req.body;
 
   try {
-    const updatedReport = await Report.findByIdAndUpdate(id, { userId, postId, reason, status }, { new: true });
+    const updatedReport = await Report.findByIdAndUpdate(id, { status }, { new: true });
     if (updatedReport) {
       res.status(200).json(updatedReport);
     } else {

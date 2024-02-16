@@ -3,8 +3,8 @@ import User from '../models/user.js';
 // Delete Account
 export const deleteAccount = async (req, res) => {
     try {
-        const userId = req.user.id; // Récupérer l'ID de l'utilisateur à partir du jeton d'authentification
-
+        //const userId = req.user.id; // Récupérer l'ID de l'utilisateur à partir du jeton d'authentification
+        const { userId } = req.body;
         // Rechercher l'utilisateur dans la base de données
         const user = await User.findById(userId);
         if (!user) {
@@ -23,8 +23,8 @@ export const deleteAccount = async (req, res) => {
 // Deactivate Account
 export const deactivateAccount = async (req, res) => {
     try {
-        const userId = req.user.id; // Récupérer l'ID de l'utilisateur à partir du jeton d'authentification
-
+        //const userId = req.user.id; // Récupérer l'ID de l'utilisateur à partir du jeton d'authentification
+        const { userId } = req.body;
         // Rechercher l'utilisateur dans la base de données
         const user = await User.findById(userId);
         if (!user) {

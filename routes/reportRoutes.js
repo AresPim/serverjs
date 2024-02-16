@@ -19,9 +19,6 @@ router.get("/:id", [
 // Update report
 router.put("/:id", [
   param("id").isMongoId(),
-  body("userId").isMongoId(),
-  body("postId").isMongoId(),
-  body("reason").notEmpty(),
   body("status").isIn(["pending", "approved", "rejected"]),
 ], updateReport);
 

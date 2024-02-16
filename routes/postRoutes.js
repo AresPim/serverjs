@@ -9,8 +9,6 @@ router.post("/", [
   body("title").notEmpty(),
   body("content").notEmpty(),
   body("category").notEmpty(),
-  body("verified").isBoolean(),
-  body("credibilityScore").isNumeric(),
   body("userId").isMongoId(),
 ], createPost);
 
@@ -20,9 +18,6 @@ router.put("/:id", [
   body("title").notEmpty(),
   body("content").notEmpty(),
   body("category").notEmpty(),
-  body("verified").isBoolean(),
-  body("credibilityScore").isNumeric(),
-  body("userId").isMongoId(),
 ], updatePost);
 
 // Obtenir tous les postes

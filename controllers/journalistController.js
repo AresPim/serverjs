@@ -13,7 +13,7 @@ export async function createJournalist(req, res){
 
 // Méthode pour récupérer tous les journalistes
 export async function getAllJournalists(req, res){
-    try {
+    try { 
         const journalists = await Journalist.find();
         res.json(journalists);
     } catch (error) {
