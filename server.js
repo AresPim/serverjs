@@ -4,6 +4,7 @@ import morgan from 'morgan';
 import cors from 'cors';  
 
 import { notFoundError, errorHandler } from './middlewares/error-handler.js';
+import { configureHedera } from './hederaConfig.js';
 
 import accountRoutes from './routes/accountRoutes.js';
 import authRoutes from './routes/authRoutes.js';
@@ -60,3 +61,5 @@ app.use(errorHandler);
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);
 });
+
+configureHedera();
