@@ -33,6 +33,7 @@ export async function configureHedera() {
   //Set the maximum payment for queries (in Hbar)
   client.setMaxQueryPayment(new Hbar(50));
 
+  /** 
   // Create new keys
   const newAccountPrivateKey = PrivateKey.generateED25519();
   const newAccountPublicKey = newAccountPrivateKey.publicKey;
@@ -47,7 +48,22 @@ export async function configureHedera() {
   const getReceipt = await newAccount.getReceipt(client);
   const newAccountId = getReceipt.accountId;
 
-  console.log("\nNew account ID: " + newAccountId);
+  console.log("\nNew account ID: " + newAccountId); 
+  */
+
+  //Create the transfer transaction
+  const newAccountId = process.env.NEW_ACCOUNT_ID;
+
+  const sendHbar = await new TransferTransaction()
+    .addHbarTransfer(myAccountId, Hbar.fromTinybars(-1000)) //Sending account
+    .addHbarTransfer(newAccountId, Hbar.fromTinybars(1000)) //Receiving account
+    .execute(client);
+  //Verify the transaction reached consensus
+  const transactionReceipt = await sendHbar.getReceipt(client);
+  console.log(
+    "The transfer transaction from my account to the new account was: " +
+      transactionReceipt.status.toString()
+  );
 
   // Verify the account balance
   const accountBalance = await new AccountBalanceQuery()
@@ -59,15 +75,4 @@ export async function configureHedera() {
       accountBalance.hbars.toTinybars() +
       " tinybar."
   );
-
-  //Create the transfer transaction
-  const sendHbar = await new TransferTransaction()
-    .addHbarTransfer(myAccountId, Hbar.fromTinybars(-1000)) //Sending account
-    .addHbarTransfer(newAccountId, Hbar.fromTinybars(1000)) //Receiving account
-    .execute(client);
-  //Verify the transaction reached consensus
-  const transactionReceipt = await sendHbar.getReceipt(client);
-  console.log("The transfer transaction from my account to the new account was: " + transactionReceipt.status.toString());
-  
-  //return newAccountId;
 }
