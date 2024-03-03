@@ -19,7 +19,7 @@ export async function updateCard(req, res) {
       if (updatedCard) {
         res.status(200).json(updatedCard);
       } else {
-        res.status(404).json({ message: "Vérification du journaliste non trouvée" });
+        res.status(404).json({ message: "Carte non trouvée" });
       }
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -40,10 +40,10 @@ export async function updateCard(req, res) {
   
     try {
       const card = await cardDetails.findById(id);
-      if (verification) {
+      if (card) {
         res.status(200).json(card);
       } else {
-        res.status(404).json({ message: "Vérification du journaliste non trouvée" });
+        res.status(404).json({ message: "Carte non trouvée" });
       }
     } catch (error) {
       res.status(500).json({ error: error.message });
