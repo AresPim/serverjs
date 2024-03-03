@@ -1,6 +1,6 @@
 import express from "express";
 import { body, param } from "express-validator";
-import { saveCardEdit, getAllCards, getCardById, updateCard } from '../controllers/cardEditController.js';
+import { saveCard, getAllCards, getCardById, updateCard } from '../controllers/cardEditController.js';
 
 const router = express.Router();
 
@@ -13,7 +13,7 @@ router.post("/", [
   body("expirationDate").isDate(),
   body("cvv").notEmpty(),
   body("cardImage").notEmpty().isBase64().withMessage("Document image must be a base64 string"),
-], saveCardEdit);
+], saveCard);
 
 // Obtenir toutes les vérifications de journalistes
 router.get("/", getAllCards);

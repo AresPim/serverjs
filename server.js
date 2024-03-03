@@ -12,6 +12,7 @@ import blockchainContractRoutes from './routes/blockchainContractRoutes.js';
 import commentRoutes from './routes/commentRoutes.js';
 import journalistRoutes from './routes/journalistRoutes.js';
 import journalistVerificationRoutes from './routes/journalistVerificationRoutes.js';
+import carDetailsRoutes from './routes/carDetailsRoutes.js';
 import messageRoutes from './routes/messageRoutes.js';
 import postRoutes from './routes/postRoutes.js';
 import reportRoutes from './routes/reportRoutes.js';
@@ -50,6 +51,7 @@ mongoose
   app.use('/blockchainContract', blockchainContractRoutes);
   app.use('/comment', commentRoutes);
   app.use('/journalist', journalistRoutes);
+  app.use('/cardDetails', carDetailsRoutes);
   app.use('/journalistVerification', journalistVerificationRoutes);
   app.use('/message', messageRoutes);
   app.use('/post', postRoutes);

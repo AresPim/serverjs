@@ -1,43 +1,40 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
+const { Schema, model } = mongoose;
 
-const cardDetailsSchema = new mongoose.Schema(
+const cardDetailsSchema = new Schema(
   {
-  userId: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'User' 
-  }, // ID de l'utilisateur associé
-  status: { 
-    type: String, 
-    enum: ['pending', 'approved', 'rejected'], 
-    default: 'pending' 
-  }, // État de l'édition de la carte
-  adminId: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Admin' 
-  }, // ID de l'administrateur responsable
-  cardType: { 
-    type: String 
+      userId: { 
+          type: mongoose.Schema.Types.ObjectId, 
+          ref: 'User' 
+      }, 
+      status: { 
+          type: String, 
+          enum: ['pending', 'approved', 'rejected'], 
+          default: 'pending' 
+      }, 
+      adminId: { 
+          type: mongoose.Schema.Types.ObjectId, 
+          ref: 'Admin' 
+      },
+      cardType: { 
+          type: String 
+      },
+      cardNumber: { 
+          type: String 
+      },
+      cardOwner: { 
+          type: String 
+      },
+      expirationDate: { 
+          type: Date 
+      },
+      cvv: { 
+          type: String 
+      },
   },
-  cardNumber: { 
-    type: String 
-  },
-  cardOwner: { 
-    type: String 
-  },
-  expirationDate: { 
-    type: Date 
-  },
-  cvv: { 
-    type: String 
-  },
-  cardImage: { 
-    data: Buffer, 
-    contentType: String 
-  },
-},
-{
-  timestamps: true
-}
+  {
+    timestamps: true
+  }
 );
 
-module.exports = mongoose.model('CardDetails', cardDetailsSchema);
+export default model('CardDetails', cardDetailsSchema);

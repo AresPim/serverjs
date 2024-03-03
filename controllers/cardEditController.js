@@ -1,12 +1,12 @@
-import CardEdit from "../models/cardDetails.js.js";
+import cardDetails from "../models/cardDetails.js";
 
-export async function saveCardEdit(req, res) {
+export async function saveCard(req, res) {
   try {
     // Logique pour enregistrer l'édition de la carte
     const { userId, cardNumber, cardOwner, cardType, expirationDate, cvv, cardImage } = req.body;
 
-    // Créez une nouvelle instance du modèle CardEdit
-    const cardEdit = new CardEdit({
+    // Créez une nouvelle instance du modèle cardDetails
+    const cardDetails = new cardDetails({
       userId,
       cardNumber,
       cardOwner,
@@ -17,7 +17,7 @@ export async function saveCardEdit(req, res) {
     });
 
     // Enregistrez les données dans la base de données
-    await cardEdit.save();
+    await cardDetails.save();
 
     res.status(200).json({ message: 'Card details saved successfully' });
   } catch (error) {
@@ -31,9 +31,9 @@ export async function updateCard(req, res) {
     const { cardNumber, cardOwner, expirationDate, cvv, cardImage, status } = req.body;
   
     try {
-      const updatedVerification = await JournalistVerification.findByIdAndUpdate(id, { cardNumber, cardOwner, expirationDate, cvv, cardImage, status }, { new: true });
-      if (updatedVerification) {
-        res.status(200).json(updatedVerification);
+      const updatedCard = await cardDetails.findByIdAndUpdate(id, { cardNumber, cardOwner, expirationDate, cvv, cardImage, status }, { new: true });
+      if (updatedCard) {
+        res.status(200).json(updatedCard);
       } else {
         res.status(404).json({ message: "Vérification du journaliste non trouvée" });
       }
@@ -44,8 +44,8 @@ export async function updateCard(req, res) {
   //get all cards 
   export async function getAllCards(req, res) {
     try {
-      const verifications = await JournalistVerification.find({});
-      res.status(200).json(verifications);
+      const cards = await cardDetails.find({});
+      res.status(200).json(cards);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
@@ -55,9 +55,9 @@ export async function updateCard(req, res) {
     const { id } = req.params;
   
     try {
-      const verification = await JournalistVerification.findById(id);
+      const card = await cardDetails.findById(id);
       if (verification) {
-        res.status(200).json(verification);
+        res.status(200).json(card);
       } else {
         res.status(404).json({ message: "Vérification du journaliste non trouvée" });
       }
