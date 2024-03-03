@@ -31,6 +31,10 @@ const cardDetailsSchema = new Schema(
       cvv: { 
           type: String 
       },
+      cardImage: { 
+        data: Buffer, 
+        contentType: String 
+      },
   },
   {
     timestamps: true

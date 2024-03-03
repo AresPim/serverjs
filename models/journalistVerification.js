@@ -13,7 +13,8 @@ const journalistVerificationSchema = new Schema(
             ref: 'CardDetails' 
         }],
         documentType: { 
-            type: String 
+            type: String,
+           // enum: ['IDCard', 'Passport'] 
         },
         documentNumber: { 
             type: String 

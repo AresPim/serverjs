@@ -1,28 +1,12 @@
 import cardDetails from "../models/cardDetails.js";
 
-export async function saveCard(req, res) {
+export const saveCard = async (req, res) => {
   try {
-    // Logique pour enregistrer l'édition de la carte
-    const { userId, cardNumber, cardOwner, cardType, expirationDate, cvv, cardImage } = req.body;
-
-    // Créez une nouvelle instance du modèle cardDetails
-    const cardDetails = new cardDetails({
-      userId,
-      cardNumber,
-      cardOwner,
-      cardType,
-      expirationDate,
-      cvv,
-      cardImage: { data: Buffer.from(cardImage, 'base64'), contentType: 'image/jpeg' }
-    });
-
-    // Enregistrez les données dans la base de données
-    await cardDetails.save();
-
-    res.status(200).json({ message: 'Card details saved successfully' });
+    const { userId, cardNumber, cardOwner, cardType, expirationDate, cvv } = req.body;
+    const newCard = await cardDetails.create({ userId, cardNumber, cardOwner, cardType, expirationDate, cvv });
+      res.status(201).json(newCard);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Internal server error' });
+      res.status(500).json({ error: error.message });
   }
 };
 //Update card 
