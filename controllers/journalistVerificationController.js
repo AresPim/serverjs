@@ -3,20 +3,21 @@ import JournalistVerification from "../models/journalistVerification.js";
 export async function saveDocumentVerification(req, res) {
   try {
     // Logique pour enregistrer la vérification des documents
-    const { userId, documentType, documentNumber, documentImage } = req.body;
+    const { userId, documentType, documentNumber, cardDetails } = req.body;
 
     // Créez une nouvelle instance du modèle DocumentVerification
-    const documentVerification = new DocumentVerification({
+    const documentVerification = new JournalistVerification({
       userId,
       documentType,
       documentNumber,
-      documentImage: { data: Buffer.from(documentImage, 'base64'), contentType: 'image/jpeg' }
+      cardDetails,
+      //documentImage: { data: Buffer.from(documentImage, 'base64'), contentType: 'image/jpeg' }
     });
 
     // Enregistrez les données dans la base de données
     await documentVerification.save();
 
-    res.status(200).json({ message: 'Document verification saved successfully' });
+    res.status(200).json({documentVerification});
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });

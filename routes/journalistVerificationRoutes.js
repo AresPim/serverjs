@@ -9,6 +9,7 @@ router.post("/", [
   body("userId").isMongoId(),
   body("documentType").notEmpty(),
   body("documentNumber").notEmpty(),
+  body("cardDetails").isMongoId(),
   body("documentImage").notEmpty().isBase64().withMessage("Document image must be a base64 string"),
 ], saveDocumentVerification);
 

@@ -8,13 +8,14 @@ const journalistVerificationSchema = new Schema(
             ref: 'User',
             required: true
         },
-        cardDetails: [{ 
+        cardDetails: [{  //Array contennat les IDs des cartes
             type: mongoose.Schema.Types.ObjectId, 
-            ref: 'CardDetails' 
+            ref: 'CardDetails',
+            required: true 
         }],
         documentType: { 
             type: String,
-           // enum: ['IDCard', 'Passport'] 
+            enum: ['IDCard', 'Passport'] 
         },
         documentNumber: { 
             type: String 
@@ -27,7 +28,7 @@ const journalistVerificationSchema = new Schema(
             type: String, 
             enum: ['pending', 'approved', 'rejected'], 
             default: 'pending' 
-        }, // État de la vérification
+        }, 
         adminId: { 
             type: mongoose.Schema.Types.ObjectId, 
             ref: 'Admin' 
