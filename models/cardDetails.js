@@ -17,7 +17,8 @@ const cardDetailsSchema = new Schema(
           ref: 'Admin' 
       },
       cardType: { 
-          type: String 
+          type: String, 
+          enum: ['Visa', 'Mastercard', 'Paypal', 'Apple Pay'], 
       },
       cardNumber: { 
           type: String 
