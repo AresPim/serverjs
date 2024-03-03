@@ -4,7 +4,7 @@ import morgan from 'morgan';
 import cors from 'cors';  
 
 import { notFoundError, errorHandler } from './middlewares/error-handler.js';
-import { configureHedera } from './hederaConfig.js';
+//import { configureHedera } from './hederaConfig.js';
 
 import accountRoutes from './routes/accountRoutes.js';
 import authRoutes from './routes/authRoutes.js';
@@ -17,6 +17,8 @@ import postRoutes from './routes/postRoutes.js';
 import reportRoutes from './routes/reportRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import voteRoutes from './routes/voteRoutes.js';
+
+//import { generateKeyPair } from './controllers/authController.js'
 
 mongoose.set('strictQuery', false);
 
@@ -62,4 +64,7 @@ app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);
 });
 
-configureHedera();
+//configureHedera();
+
+//generateKeyPair();
+

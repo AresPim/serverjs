@@ -8,18 +8,75 @@ const journalistVerificationSchema = new Schema(
             ref: 'User',
             required: true
         },
-        documents: {
-            type: Array,
+        cardDetails: [{ 
+            type: mongoose.Schema.Types.ObjectId, 
+            ref: 'CardDetails' 
+        }],
+        documentType: { 
+            type: String 
+        },
+        documentNumber: { 
+            type: String 
+        },
+        documentImage: { 
+          data: Buffer, 
+          contentType: String 
+        },
+        status: { 
+            type: String, 
+            enum: ['pending', 'approved', 'rejected'], 
+            default: 'pending' 
+        }, // État de la vérification
+        adminId: { 
+            type: mongoose.Schema.Types.ObjectId, 
+            ref: 'Admin' 
+        },
+    
+   /**  
+        passportNbr: {
+            type: String, 
             required: true
         },
-        status: {
-            type: String,
+        idCardNbr: {
+            type: String, 
             required: true
         },
-        adminId: {
-            type: String,
-            required: true
+        idCardImage: {
+            type: String, // Chemin de l'image de la carte d'identité
+            //required: true
         },
+        passportImage: {
+            type: String, // Chemin de l'image du passeport
+            //required: true
+        },
+        
+        bankCards: [
+            {
+                type: {
+                    type: String,
+                    enum: ['Visa', 'Mastercard', 'PayPal', 'Apple Pay'],
+                    required: true
+                },
+                cardNumber: {
+                    type: String,
+                    required: true
+                },
+                ownerName: {
+                    type: String,
+                    required: true
+                },
+                expirationDate: {
+                    type: Date,
+                    required: true
+                },
+                cvv: {
+                    type: String,
+                    required: true
+                }
+            }
+        ],
+    */ 
+
     },
     {
         timestamps: true

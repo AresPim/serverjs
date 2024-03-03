@@ -1,4 +1,29 @@
 import JournalistVerification from "../models/journalistVerification.js";
+
+export async function saveDocumentVerification(req, res) {
+  try {
+    // Logique pour enregistrer la vérification des documents
+    const { userId, documentType, documentNumber, documentImage } = req.body;
+
+    // Créez une nouvelle instance du modèle DocumentVerification
+    const documentVerification = new DocumentVerification({
+      userId,
+      documentType,
+      documentNumber,
+      documentImage: { data: Buffer.from(documentImage, 'base64'), contentType: 'image/jpeg' }
+    });
+
+    // Enregistrez les données dans la base de données
+    await documentVerification.save();
+
+    res.status(200).json({ message: 'Document verification saved successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+/** 
 //Create a new journalist verification
 export async function createJournalistVerification(req, res) {
   const { userId, documents, status, adminId } = req.body;
@@ -10,13 +35,14 @@ export async function createJournalistVerification(req, res) {
     res.status(500).json({ error: error.message });
   }
 }
+*/
 //Update journalist verification
 export async function updateJournalistVerification(req, res) {
   const { id } = req.params;
-  const { userId, documents, status, adminId } = req.body;
+  const { documentType, documentNumber, documentImage, status } = req.body;
 
   try {
-    const updatedVerification = await JournalistVerification.findByIdAndUpdate(id, { userId, documents, status, adminId }, { new: true });
+    const updatedVerification = await JournalistVerification.findByIdAndUpdate(id, { documentType, documentNumber, documentImage, status }, { new: true });
     if (updatedVerification) {
       res.status(200).json(updatedVerification);
     } else {
@@ -26,7 +52,7 @@ export async function updateJournalistVerification(req, res) {
     res.status(500).json({ error: error.message });
   }
 }
-//Delete journalist verification
+//get all journalist verification
 export async function getAllJournalistVerifications(req, res) {
   try {
     const verifications = await JournalistVerification.find({});

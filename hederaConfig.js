@@ -10,6 +10,7 @@ import {
 //require("dotenv").config();
 import dotenv from "dotenv";
 dotenv.config();
+const newAccountId = process.env.NEW_ACCOUNT_ID;
 
 export async function configureHedera() {
   // Grab your Hedera testnet account ID and private key from your .env file
@@ -24,7 +25,7 @@ export async function configureHedera() {
   }
 
   // Create your connection to the Hedera Network
-  const client = Client.forTestnet();
+  const client = Client.forTestnet(); //Client.forMainnet() pour le réseau principal
   client.setOperator(myAccountId, myPrivateKey);
 
   //Set the default maximum transaction fee (in Hbar)
@@ -50,10 +51,8 @@ export async function configureHedera() {
 
   console.log("\nNew account ID: " + newAccountId); 
   */
-
+/** 
   //Create the transfer transaction
-  const newAccountId = process.env.NEW_ACCOUNT_ID;
-
   const sendHbar = await new TransferTransaction()
     .addHbarTransfer(myAccountId, Hbar.fromTinybars(-1000)) //Sending account
     .addHbarTransfer(newAccountId, Hbar.fromTinybars(1000)) //Receiving account
@@ -64,7 +63,7 @@ export async function configureHedera() {
     "The transfer transaction from my account to the new account was: " +
       transactionReceipt.status.toString()
   );
-
+*/
   // Verify the account balance
   const accountBalance = await new AccountBalanceQuery()
     .setAccountId(newAccountId)

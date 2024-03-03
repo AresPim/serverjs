@@ -7,6 +7,19 @@ const userSchema = new Schema(
             type: String,
             required: true
         },
+        firstName: {
+            type: String,
+            required: true
+        },
+        lastName: {
+            type: String,
+            required: true
+        },
+        gender: {
+            type: String,
+            enum: ['male', 'female'], 
+            required: true
+        },
         password: {
             type: String,
             required: true
@@ -21,9 +34,19 @@ const userSchema = new Schema(
         },
         role: {
             type: String,
-            required: true
+            //required: true,
+            enum: ['Simple User', 'Journalist'],
+            default: 'Simple User' 
         },
         profileImage: {
+            type: String,
+            //required: true
+        },
+        hederaAccountId: {
+            type: String,
+            //required: true
+        },
+        publicKey: {
             type: String,
             //required: true
         },

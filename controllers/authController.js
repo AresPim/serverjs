@@ -1,7 +1,11 @@
 import User from '../models/user.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-//Create a new user
+import { generateKeyPairSync } from 'crypto';
+import { Client, AccountCreateTransaction, PrivateKey, Hbar } from "@hashgraph/sdk";
+
+
+//signin
 export async function signin(req, res) {
     const { email, password } = req.body;
   
@@ -30,22 +34,102 @@ export const hashPassword = async (password) => {
         throw new Error("Erreur lors du hachage du mot de passe");
     }
 };
+ 
 // Sign Up
 export const signUp = async (req, res) => {
   try {
-      const { username, password, email, phoneNumber, role, profileImage, reputation } = req.body;
+      const { username, password, email, phoneNumber, firstName, lastName, gender, role, profileImage } = req.body;
 
       // Hacher le mot de passe
       const hashedPassword = await hashPassword(password);
 
       // Créer un nouvel utilisateur avec le mot de passe haché
-      const newUser = await User.create({ username, password: hashedPassword, email, phoneNumber, role, profileImage, reputation });
+      const newUser = await User.create({ username, password: hashedPassword, email, phoneNumber, firstName, lastName, gender, role, profileImage });
 
       res.status(201).json(newUser);
   } catch (error) {
       res.status(500).json({ error: error.message });
   }
 };
+/** 
+//générer la paire de clés
+export function generateKeyPair() {
+    const { publicKey, privateKey } = generateKeyPairSync('rsa', {
+      modulusLength: 4096,
+      publicKeyEncoding: { type: 'spki', format: 'pem' },
+      privateKeyEncoding: { type: 'pkcs8', format: 'pem' }
+    });
+    //console.log(publicKey,privateKey);
+    // On appelle la fonction generateKeyPairSync avec deux arguments : 
+    //le premier spécifie l'algorithme de cryptographie à utiliser (dans ce cas, RSA)
+    //le deuxième est un objet de configuration avec 3 attributs:
+    //1)modulusLength spécifie la longueur du module de la clé RSA ici c une longueur de 4096 bits est utilisée
+    //2)publicKeyEncoding spécifie le format de l'encodage de la clé publique générée.
+    //ici : la clé publique est encodée au format PEM (Privacy-Enhanced Mail) avec un type SPKI (SubjectPublicKeyInfo).
+    //3)privateKeyEncoding spécifie le format de l'encodage de la clé privée générée.
+    //ici : la clé privée est encodée au format PEM avec un type PKCS#8 (Private-Key Information Syntax Standard).
+    return { publicKey, privateKey }; // retourne un objet contenant les clés publique et privée
+  }
+//créer un compte Hedera pour les utilisateurs/journalistes
+async function createHederaAccount(publicKey) {
+    const myAccountId = process.env.MY_ACCOUNT_ID;
+    const myPrivateKey = process.env.MY_PRIVATE_KEY;
+
+    const client = Client.forTestnet(); // Initialisez le client Hedera
+  
+    // Créez une clé privée pour le compte opérateur
+    const operatorPrivateKey = PrivateKey.fromStringED2551(myPrivateKey);
+    
+    // Associez le compte opérateur au client
+    client.setOperator(myAccountId, operatorPrivateKey);
+  
+    // Créez une transaction de création de compte avec la clé publique
+    const transactionResponse = await new AccountCreateTransaction()
+      .setKey(publicKey) // Associez la clé publique au nouveau compte
+      .setInitialBalance(Hbar.fromTinybars(1000)) // Définissez le solde initial du nouveau compte
+      .execute(client); // Exécutez la transaction sur le réseau Hedera
+  
+    // Récupérez l'identifiant du compte nouvellement créé
+    const accountId = (await transactionResponse.getReceipt(client)).accountId.toString();
+  
+    return accountId; // Renvoyez l'identifiant du compte nouvellement créé
+  }
+
+// Sign Up
+export const signUp = async (req, res) => {
+    try {
+      const { username, password, email, phoneNumber, firstName, lastName, gender, role, profileImage } = req.body;
+  
+      // Génération des clés cryptographiques
+      const { publicKey, privateKey } = generateKeyPair(); 
+
+      // Association des clés avec les comptes sur Hedera
+      const hederaAccountId = await createHederaAccount(publicKey);
+  
+      // Hacher le mot de passe
+      const hashedPassword = await hashPassword(password);
+  
+      // Créer un nouvel utilisateur avec les informations et les clés associées
+      const newUser = await User.create({ 
+        username, 
+        password: hashedPassword, 
+        email, 
+        phoneNumber, 
+        firstName, 
+        lastName, 
+        gender, 
+        role, 
+        profileImage, 
+        hederaAccountId, // Stocker l'identifiant du compte Hedera dans la base de données
+        publicKey // Stocker la clé publique dans la base de données
+      });
+
+      res.status(201).json({ message: 'User registered successfully', user: newUser });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+ */ 
 // Forgot Password
 export const forgotPassword = async (req, res) => {
       try {
