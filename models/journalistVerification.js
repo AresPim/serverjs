@@ -8,11 +8,31 @@ const journalistVerificationSchema = new Schema(
             ref: 'User',
             required: true
         },
-        cardDetails: [{  //Array contennat les IDs des cartes
-            type: mongoose.Schema.Types.ObjectId, 
-            ref: 'CardDetails',
-            required: true 
-        }],
+        cardDetails: [
+            {
+                type: {
+                    type: String,
+                    enum: ['Visa', 'Mastercard', 'PayPal', 'Apple Pay'],
+                    //required: true
+                },
+                cardNumber: {
+                    type: String,
+                    //required: true
+                },
+                ownerName: {
+                    type: String,
+                    //required: true
+                },
+                expirationDate: {
+                    type: Date,
+                    //required: true
+                },
+                cvv: {
+                    type: String,
+                    //required: true
+                }
+            }
+        ],
         documentType: { 
             type: String,
             enum: ['IDCard', 'Passport'] 
@@ -51,7 +71,11 @@ const journalistVerificationSchema = new Schema(
             type: String, // Chemin de l'image du passeport
             //required: true
         },
-        
+        cardDetails: [{  //Array contennat les IDs des cartes
+            type: mongoose.Schema.Types.ObjectId, 
+            ref: 'CardDetails',
+            required: true 
+        }],
         bankCards: [
             {
                 type: {
