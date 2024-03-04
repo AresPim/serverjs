@@ -46,6 +46,10 @@ const postSchema = new Schema(
             type: Number,
             //required: false
         },
+        image: {
+            type: String,
+            //required: false
+        },
         reports: { //Nombre de signalements
             type: Number,
            // required: false
