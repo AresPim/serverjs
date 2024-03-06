@@ -1,6 +1,29 @@
 import User from '../models/user.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+
+
+
+
+import { Client, PrivateKey, AccountCreateTransaction, AccountBalanceQuery, Hbar, TransferTransaction } from "@hashgraph/sdk";
+import dotenv from "dotenv";
+dotenv.config();
+
+/*
+import { Client, ContractId, PrivateKey, publicKey } from "@hashgraph/sdk";
+
+// Set up Hedera client
+const client = Client.forTestnet(); // nbadel  .forMainnet()  bch nestaaml  mainnet  fi blasset Testnet 
+client.setOperator(process.env.MY_ACCOUNT_ID, process.env.MY_PRIVATE_KEY);
+
+//smart contract Id
+
+
+const contractId = "0x103d26bA78B87270672d078fF11bB2eA6d16E5a3"  ;
+const contractInstance = new ContractId(contractId);
+
+
+//*/
 //Create a new user
 export async function signin(req, res) {
     const { email, password } = req.body;
@@ -41,6 +64,58 @@ export const signUp = async (req, res) => {
       // Créer un nouvel utilisateur avec le mot de passe haché
       const newUser = await User.create({ username, password: hashedPassword, email, phoneNumber, role, profileImage, reputation });
 
+
+      const myAccountId = process.env.MY_ACCOUNT_ID;
+      const myPrivateKey = process.env.MY_PRIVATE_KEY;
+    
+      // If we weren't able to grab it, we should throw a new error
+      if (myAccountId == null || myPrivateKey == null) {
+        throw new Error(
+          "Environment variables myAccountId and myPrivateKey must be present"
+        );
+      }
+
+      const client = Client.forTestnet();
+      client.setOperator(myAccountId, myPrivateKey);
+          //Set your account as the client's operator
+    client.setOperator(myAccountId, myPrivateKey);
+  
+    // Set default max transaction fee & max query payment
+    client.setMaxTransactionFee(new Hbar(100));
+    client.setMaxQueryPayment(new Hbar(50));
+  
+    // Create new keys
+    const newAccountPrivateKey = PrivateKey.generateED25519();
+    const newAccountPublicKey = newAccountPrivateKey.publicKey;
+  
+    // Create a new account with 1,000 tinybar starting balance
+    const newAccountTransactionResponse = await new AccountCreateTransaction()
+      .setKey(newAccountPublicKey)
+      .setInitialBalance(Hbar.fromTinybars(1000))
+      .execute(client);
+  
+    // Get the new account ID
+    const getReceipt = await newAccountTransactionResponse.getReceipt(client);
+    const newAccountId = getReceipt.accountId;
+  
+    console.log("\nNew account ID: " + newAccountId);
+  
+  
+    // Verify the account balance
+    const accountBalance = await new AccountBalanceQuery()
+      .setAccountId(newAccountId)
+      .execute(client);
+  
+    console.log(
+      "New account balance is: " +
+        accountBalance.hbars.toTinybars() +
+        " tinybars."
+    );
+/*
+
+      const transactionResponse = await contractInstance.registerUser(username, email, phoneNumber, profileImage, reputation).execute(client);
+      const transactionReceipt = await transactionResponse.getReceipt(client);
+      //*/
       res.status(201).json(newUser);
   } catch (error) {
       res.status(500).json({ error: error.message });
