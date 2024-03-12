@@ -2,9 +2,10 @@ import express from 'express';
 import mongoose from 'mongoose';
 import morgan from 'morgan';
 import cors from 'cors';  
-
+import { fileURLToPath } from 'url';
+import path, { dirname } from 'path';
 import { notFoundError, errorHandler } from './middlewares/error-handler.js';
-//import { configureHedera } from './hederaConfig.js';
+import { configureHedera } from './hederaConfig.js';
 
 import accountRoutes from './routes/accountRoutes.js';
 import authRoutes from './routes/authRoutes.js';
@@ -61,12 +62,14 @@ mongoose
 
 app.use(notFoundError);
 app.use(errorHandler);
-
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);
 });
 
-//configureHedera();
+configureHedera();
 
 //generateKeyPair();
 

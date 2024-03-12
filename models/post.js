@@ -12,6 +12,10 @@ const postSchema = new Schema(
             type: String,
             required: true
         },
+        image: {
+            type: String,
+            required: true
+        },
         content: {
             type: String,
             required: true
@@ -46,14 +50,10 @@ const postSchema = new Schema(
             type: Number,
             //required: false
         },
-        image: {
-            type: String,
-            //required: false
-        },
         reports: { //Nombre de signalements
             type: Number,
            // required: false
-        } //attachments si on desire ajouter des attachements (image..) au message
+        } 
     },
     {
         timestamps: true

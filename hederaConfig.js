@@ -10,6 +10,7 @@ import {
 //require("dotenv").config();
 import dotenv from "dotenv";
 dotenv.config();
+
 const newAccountId = process.env.NEW_ACCOUNT_ID;
 
 export async function configureHedera() {

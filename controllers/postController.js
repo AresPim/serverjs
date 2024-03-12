@@ -1,15 +1,22 @@
 import Post from "../models/post.js";
 //Create a new post
 export async function createPost(req, res) {
-  const { title, content, category, userId } = req.body;
+  const { title, content,image, category, userId } = req.body;
 
   try {
-    const newPost = await Post.create({ title, content, category, userId });
+    const image = req.file; // Assuming you use middleware like multer for handling file uploads
+
+    // Save the file to the 'uploads' directory
+    const imagePath = `uploads/${image.filename}`;
+
+    const newPost = await Post.create({ title, content, category, userId, image: imagePath });
     res.status(201).json(newPost);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 }
+
+
 //Update post
 export async function updatePost(req, res) {
   const { id } = req.params;
@@ -30,11 +37,23 @@ export async function updatePost(req, res) {
 export async function getAllPosts(req, res) {
   try {
     const posts = await Post.find({});
-    res.status(200).json(posts);
+    // Map each post to include necessary attributes
+    const modifiedPosts = posts.map(post => ({
+      _id: post._id,
+      userId: post.userId,
+      title: post.title,
+      image: `http://192.168.0.128:9090/uploads/${post.image}`, // Adjust the URL accordingly
+      content: post.content,
+      category: post.category,
+      createdAt: post.createdAt,
+      updatedAt: post.updatedAt,
+    }));
+    res.status(200).json(modifiedPosts);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 }
+
 //Get post by id
 export async function getPostById(req, res) {
   const { id } = req.params;

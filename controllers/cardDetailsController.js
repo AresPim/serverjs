@@ -2,8 +2,8 @@ import cardDetails from "../models/cardDetails.js";
 
 export const saveCard = async (req, res) => {
   try {
-    const { cardNumber, cardOwner, cardType, expirationDate, cvv } = req.body;
-    const newCard = await cardDetails.create({ cardNumber, cardOwner, cardType, expirationDate, cvv });
+    const { userId, cardNumber, cardOwner, cardType, expirationDate, cvv } = req.body;
+    const newCard = await cardDetails.create({ userId, cardNumber, cardOwner, cardType, expirationDate, cvv });
       res.status(201).json(newCard);
   } catch (error) {
       res.status(500).json({ error: error.message });

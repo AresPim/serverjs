@@ -1,18 +1,36 @@
 import User from '../models/user.js';
 import bcrypt from 'bcrypt';
+import dotenv from "dotenv";
+dotenv.config();
 import jwt from 'jsonwebtoken';
-import { generateKeyPairSync } from 'crypto';
-import { Client, AccountCreateTransaction, PrivateKey, Hbar } from "@hashgraph/sdk";
-
+import {
+    Client,
+    PrivateKey,
+    AccountCreateTransaction,
+    AccountBalanceQuery,
+    Hbar,
+    TransferTransaction,
+  } from "@hashgraph/sdk";
+  
 
 //signin
 export async function signin(req, res) {
     const { email, password } = req.body;
   
-  try {
-      const user = await User.findOne({ email, password });
+    try {
+      const user = await User.findOne({ email });
+  
       if (user) {
-        res.status(200).json(user);
+        // Compare hashed passwords
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+       
+        const token = jwt.sign({userId: user._id, role: user.role, username: user.username, firstName: user.firstName, lastName: user.lastName},process.env.JWT_SECRET_KEY,{expiresIn:process.env.JWT_EXPIRE_TIME})
+
+        if (isPasswordValid) {
+          res.status(200).json(token);
+        } else {
+          res.status(404).json({ message: "Utilisateur non trouvé" });
+        }
       } else {
         res.status(404).json({ message: "Utilisateur non trouvé" });
       }
@@ -20,6 +38,7 @@ export async function signin(req, res) {
       res.status(500).json({ error: error.message });
     }
   }
+  
 // Hash Password
 export const hashPassword = async (password) => {
     try {
@@ -34,102 +53,80 @@ export const hashPassword = async (password) => {
         throw new Error("Erreur lors du hachage du mot de passe");
     }
 };
- 
-// Sign Up
-export const signUp = async (req, res) => {
-  try {
-      const { username, password, email, phoneNumber, firstName, lastName, gender, role, profileImage } = req.body;
-
-      // Hacher le mot de passe
-      const hashedPassword = await hashPassword(password);
-
-      // Créer un nouvel utilisateur avec le mot de passe haché
-      const newUser = await User.create({ username, password: hashedPassword, email, phoneNumber, firstName, lastName, gender, role, profileImage });
-
-      res.status(201).json(newUser);
-  } catch (error) {
-      res.status(500).json({ error: error.message });
-  }
-};
-/** 
-//générer la paire de clés
-export function generateKeyPair() {
-    const { publicKey, privateKey } = generateKeyPairSync('rsa', {
-      modulusLength: 4096,
-      publicKeyEncoding: { type: 'spki', format: 'pem' },
-      privateKeyEncoding: { type: 'pkcs8', format: 'pem' }
-    });
-    //console.log(publicKey,privateKey);
-    // On appelle la fonction generateKeyPairSync avec deux arguments : 
-    //le premier spécifie l'algorithme de cryptographie à utiliser (dans ce cas, RSA)
-    //le deuxième est un objet de configuration avec 3 attributs:
-    //1)modulusLength spécifie la longueur du module de la clé RSA ici c une longueur de 4096 bits est utilisée
-    //2)publicKeyEncoding spécifie le format de l'encodage de la clé publique générée.
-    //ici : la clé publique est encodée au format PEM (Privacy-Enhanced Mail) avec un type SPKI (SubjectPublicKeyInfo).
-    //3)privateKeyEncoding spécifie le format de l'encodage de la clé privée générée.
-    //ici : la clé privée est encodée au format PEM avec un type PKCS#8 (Private-Key Information Syntax Standard).
-    return { publicKey, privateKey }; // retourne un objet contenant les clés publique et privée
-  }
-//créer un compte Hedera pour les utilisateurs/journalistes
-async function createHederaAccount(publicKey) {
-    const myAccountId = process.env.MY_ACCOUNT_ID;
-    const myPrivateKey = process.env.MY_PRIVATE_KEY;
-
-    const client = Client.forTestnet(); // Initialisez le client Hedera
-  
-    // Créez une clé privée pour le compte opérateur
-    const operatorPrivateKey = PrivateKey.fromStringED2551(myPrivateKey);
-    
-    // Associez le compte opérateur au client
-    client.setOperator(myAccountId, operatorPrivateKey);
-  
-    // Créez une transaction de création de compte avec la clé publique
-    const transactionResponse = await new AccountCreateTransaction()
-      .setKey(publicKey) // Associez la clé publique au nouveau compte
-      .setInitialBalance(Hbar.fromTinybars(1000)) // Définissez le solde initial du nouveau compte
-      .execute(client); // Exécutez la transaction sur le réseau Hedera
-  
-    // Récupérez l'identifiant du compte nouvellement créé
-    const accountId = (await transactionResponse.getReceipt(client)).accountId.toString();
-  
-    return accountId; // Renvoyez l'identifiant du compte nouvellement créé
-  }
-
-// Sign Up
+//signup with hedera
 export const signUp = async (req, res) => {
     try {
-      const { username, password, email, phoneNumber, firstName, lastName, gender, role, profileImage } = req.body;
-  
-      // Génération des clés cryptographiques
-      const { publicKey, privateKey } = generateKeyPair(); 
+        const { username, password, email, phoneNumber, firstName, lastName, gender, role, profileImage, hederaAccountId, publicKey } = req.body;
 
-      // Association des clés avec les comptes sur Hedera
-      const hederaAccountId = await createHederaAccount(publicKey);
-  
-      // Hacher le mot de passe
-      const hashedPassword = await hashPassword(password);
-  
-      // Créer un nouvel utilisateur avec les informations et les clés associées
-      const newUser = await User.create({ 
-        username, 
-        password: hashedPassword, 
-        email, 
-        phoneNumber, 
-        firstName, 
-        lastName, 
-        gender, 
-        role, 
-        profileImage, 
-        hederaAccountId, // Stocker l'identifiant du compte Hedera dans la base de données
-        publicKey // Stocker la clé publique dans la base de données
-      });
+        // Hacher le mot de passe
+        const hashedPassword = await hashPassword(password);
 
-      res.status(201).json({ message: 'User registered successfully', user: newUser });
+        // Créer un nouvel utilisateur avec le mot de passe haché
+        const newUser = await User.create({ username, password: hashedPassword, email, phoneNumber, firstName, lastName, gender, role, profileImage });
+
+        // Créer un compte Hedera pour le nouvel utilisateur
+        const HederaAaccountId = await createHederaAccount(username, email); // Appel de la fonction pour créer le compte Hedera
+
+        // Enregistrer l'identifiant du compte Hedera dans l'utilisateur nouvellement créé
+        newUser.HederaAaccountId = HederaAaccountId;
+        await newUser.save();
+
+        // Créer un jeton JWT pour l'utilisateur
+        const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET_KEY, { expiresIn: process.env.JWT_EXPIRE_TIME });
+
+        res.status(201).json(token);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+        res.status(500).json({ error: error.message });
+    }
+};
+
+async function createHederaAccount(username, email) {
+    try {
+        // Initialiser la connexion à l'API Hedera
+        const client = Client.forTestnet(); // Ou Client.forMainnet() pour le réseau principal
+        client.setOperator(process.env.MY_ACCOUNT_ID, process.env.MY_PRIVATE_KEY); // Remplacez cela par l'ID et la clé privée de votre compte de déploiement Hedera
+
+        // Générer une nouvelle paire de clés publique/privée pour l'utilisateur
+        const newUserPrivateKey = await PrivateKey.generate();
+        const newUserPublicKey = newUserPrivateKey.publicKey;
+
+        // Créer un nouveau compte Hedera avec la clé publique générée
+        const transactionResponse = await new AccountCreateTransaction()
+            .setKey(newUserPublicKey)
+            .setMaxTransactionFee(100) // Frais de transaction maximum (100 hbar)
+            .setInitialBalance(100) // Solde initial du compte (100 hbar)
+            .execute(client);
+
+        // Récupérer l'identifiant de compte attribué
+        const HederaAaccountId = (await transactionResponse.getReceipt(client)).toString();
+
+        return HederaAaccountId;
+    } catch (error) {
+        console.error("Error creating Hedera account:", error);
+        throw error;
+    }
+}
+
+/** 
+export const signUp = async (req, res) => {
+    try {
+        const { username, password, email, phoneNumber, firstName, lastName, gender, role, profileImage } = req.body;
+  
+        // Hacher le mot de passe
+        const hashedPassword = await hashPassword(password);
+  
+        // Créer un nouvel utilisateur avec le mot de passe haché
+        const newUser = await User.create({ username, password: hashedPassword, email, phoneNumber, firstName, lastName, gender, role, profileImage });
+  
+        //unique token for every user
+        const token = jwt.sign({userId: newUser._id},process.env.JWT_SECRET_KEY,{expiresIn:process.env.JWT_EXPIRE_TIME})
+
+        res.status(201).json(token);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
   };
- */ 
+*/
 // Forgot Password
 export const forgotPassword = async (req, res) => {
       try {
